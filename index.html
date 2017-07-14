@@ -1,1 +1,206 @@
-Hello World
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RestoTracker</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/gmaps-sidebar.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script src="https://use.fontawesome.com/dfec85f8f4.js"></script>
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+            font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+        }
+
+        .lorem {
+            font-style: italic;
+            color: #AAA;
+        }
+    </style>
+    <script>
+      var types = [
+        'pizza',
+        'burger',
+        'pasta',
+        'chicken',
+        'barbecue',
+        'seafood',
+        'soup',
+        'noodles'
+      ];
+      var map;
+      var infowindow;
+      var service
+      var directionsDisplay;
+      var directionsService;
+
+      function initMap() {
+        var cebu = {lat: 10.31672, lng: 123.89071};
+        var population = 922611; //922,611
+        var radius = Math.sqrt(population) * 100;
+
+        directionsDisplay = new google.maps.DirectionsRenderer();
+        directionsService = new google.maps.DirectionsService();
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: cebu,
+          zoom: 9
+        });
+        directionsDisplay.setMap(map);
+
+        infowindow = new google.maps.InfoWindow();
+        service = new google.maps.places.PlacesService(map);
+        var request = {
+          location: cebu,
+          radius: radius,
+          query: '',
+          type: ['restaurant']
+        };
+
+        google.maps.event.addListener(map, 'click', function() {
+          infowindow.close();
+        });
+
+        var cityCircle = new google.maps.Circle({
+          strokeColor: '#0000FF',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#0000FF',
+          fillOpacity: 0.3,
+          map: map,
+          center: cebu,
+          radius: radius
+        });
+
+        service.textSearch(request, callback);
+      }
+
+      function callback(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          for (var i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+          }
+        }
+      }
+
+      function createMarker(place) {
+        var placeLoc = place.geometry.location;
+        var marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.setContent('<div> \
+            <strong>' + place.name + '</strong><br>\
+            ' + place.formatted_address + '<br>\
+          </div');
+          infowindow.open(map, this);
+
+          // Directions
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+              var request = {
+                origin: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+                destination: new google.maps.LatLng(place.geometry.location.lat(), place.geometry.location.lng()),
+                travelMode: 'DRIVING'
+              };
+              directionsService.route(request, function(result, status) {
+                if (status == 'OK') {
+                  directionsDisplay.setDirections(result);
+                }
+              });
+            }, function() {
+              handleLocationError(true, infoWindow, map.getCenter());
+            });
+          } else {
+            // Browser doesn't support Geolocation
+            handleLocationError(false, infoWindow, map.getCenter());
+          }
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="https://github.com/ravenda900/ravenda900.github.io" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+            </ul>
+
+            <ul role="tablist">
+                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    RestoTracker
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <form action="#" id="form-filter">
+                  <!-- <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="all">
+                    <input type="checkbox" id="all" name="type[]" class="mdl-checkbox__input" checked>
+                    <span class="mdl-checkbox__label">All</span>
+                  </label> -->
+                </form>
+            </div>
+
+            <div class="sidebar-pane" id="settings">
+                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+        </div>
+    </div>
+    <div id="map" class="sidebar-map"></div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script>
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="js/jquery-sidebar.js"></script>
+    <script>
+      $(() => {
+        var sidebar = $('#sidebar').sidebar();
+
+        $.each(types, (key, value) => {
+          // console.log(key, value);
+          let $label = $('<label/>');
+          let $input = $('<input/>');
+          let $span = $('<span/>');
+
+          $label.attr({
+            for: value
+          }).addClass('mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect');
+
+          $input.attr({
+            type: 'checkbox',
+            id: value,
+            value: value,
+            name: 'type[]'
+          }).addClass('mdl-checkbox__input').prop('checked', true);
+
+          $span.addClass('mdl-checkbox__label').text(() => {
+            return value.replace(/\w\S*/g, (txt) => {return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+          });
+
+          $('#form-filter').append($label.append($input).append($span));
+        });
+
+        $('input[name="type[]"]').on('change', (e) => {
+          console.log($('#form-filter').serialize());
+        });
+      });
+    </script>
+  </body>
+</html>
