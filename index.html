@@ -22,12 +22,14 @@
             font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
         }
 
-        .lorem {
-            font-style: italic;
-            color: #AAA;
+        p {
+          margin: 15px 0;
         }
     </style>
     <script>
+      // TODO
+      // 1. Add new custom type
+      // 2. Add checkbox for circle toggle show/hide
       var types = [
         'pizza',
         'burger',
@@ -40,38 +42,37 @@
       ];
       var map;
       var infowindow;
-      var service
+      var service;
       var directionsDisplay;
       var directionsService;
+      var markers = [];
+      var count = [];
+      var circle;
+      var cebu = {lat: 10.31672, lng: 123.89071};
+      var population = 922611; //922,611
+      var radius = Math.sqrt(population) * 100;
 
       function initMap() {
-        var cebu = {lat: 10.31672, lng: 123.89071};
-        var population = 922611; //922,611
-        var radius = Math.sqrt(population) * 100;
-
         directionsDisplay = new google.maps.DirectionsRenderer();
         directionsService = new google.maps.DirectionsService();
 
         map = new google.maps.Map(document.getElementById('map'), {
           center: cebu,
-          zoom: 9
+          zoom: 9,
+          // mapTypeId: 'terrain'
         });
         directionsDisplay.setMap(map);
 
         infowindow = new google.maps.InfoWindow();
         service = new google.maps.places.PlacesService(map);
-        var request = {
-          location: cebu,
-          radius: radius,
-          query: '',
-          type: ['restaurant']
-        };
 
         google.maps.event.addListener(map, 'click', function() {
           infowindow.close();
         });
 
-        var cityCircle = new google.maps.Circle({
+        scanRestaurants(service, cebu, radius);
+
+        circle = new google.maps.Circle({
           strokeColor: '#0000FF',
           strokeOpacity: 0.8,
           strokeWeight: 2,
@@ -79,25 +80,46 @@
           fillOpacity: 0.3,
           map: map,
           center: cebu,
-          radius: radius
+          radius: radius,
+          editable: true,
+          draggable: true
         });
 
-        service.textSearch(request, callback);
+        google.maps.event.addListener(circle, 'radius_changed', function() {
+          var location = {
+            lat: circle.getCenter().lat(),
+            lng: circle.getCenter().lng()
+          };
+          deleteMarkers();
+
+          setTimeout(function() {
+            scanRestaurants(service, location, circle.getRadius());
+            filterMarkers();
+          }, 1500);
+
+          console.log('Radius has been changed to: ' + circle.getRadius());
+        });
+
+        google.maps.event.addListener(circle, 'center_changed', function() {
+          var location = {
+            lat: circle.getCenter().lat(),
+            lng: circle.getCenter().lng()
+          };
+          deleteMarkers();
+
+          setTimeout(function() {
+            scanRestaurants(service, location, circle.getRadius());
+            filterMarkers();
+          }, 1500);
+
+          console.log('Center has been changed to: ', location);
+        });
       }
 
-      function callback(results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          for (var i = 0; i < results.length; i++) {
-            createMarker(results[i]);
-          }
-        }
-      }
-
-      function createMarker(place) {
-        var placeLoc = place.geometry.location;
+      function addMarker(place) {
         var marker = new google.maps.Marker({
-          map: map,
-          position: place.geometry.location
+          position: place.geometry.location,
+          map: map
         });
 
         google.maps.event.addListener(marker, 'click', function() {
@@ -128,6 +150,77 @@
             handleLocationError(false, infoWindow, map.getCenter());
           }
         });
+
+        marker.type = getType();
+        markers.push(marker);
+      }
+
+      function setMapOnAll(map) {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
+
+      function clearMarkers() {
+        setMapOnAll(null);
+      }
+
+      function filterMarkers() {
+        $('input[name="type[]"]').each(function() {
+          var value = $(this).val();
+
+          for (var i = 0; i < markers.length; i++) {
+            if ($(this).is(':checked') && value === markers[i].type) {
+              markers[i].setVisible(true);
+            }
+
+            if (!$(this).is(':checked') && value === markers[i].type) {
+              markers[i].setVisible(false);
+            }
+          }
+        });
+      }
+
+      function deleteMarkers() {
+        clearMarkers();
+        markers = [];
+      }
+
+      function showMarkers() {
+        setMapOnAll(map);
+      }
+
+      function scanRestaurants(service, location, radius) {
+        for (let i = 0 ; i < types.length ; i++) {
+          var request = {
+            location: location,
+            radius: radius,
+            query: types[i],
+            type: ['restaurant']
+          };
+          service.textSearch(request, callback);
+        }
+      }
+
+      function getType(marker) {
+        var length = markers.length;
+        var total = 0;
+
+        for (let i = 0 ; i < count.length ; i++) {
+          total += count[i];
+          if (length <= (total - 1)) {
+            return types[i];
+          }
+        }
+      }
+
+      function callback(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          count.push(results.length);
+          for (let i = 0 ; i < results.length ; i++) {
+            addMarker(results[i]);
+          }
+        }
       }
     </script>
   </head>
@@ -152,21 +245,30 @@
                     RestoTracker
                     <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
                 </h1>
-                <form action="#" id="form-filter">
-                  <!-- <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="all">
-                    <input type="checkbox" id="all" name="type[]" class="mdl-checkbox__input" checked>
-                    <span class="mdl-checkbox__label">All</span>
-                  </label> -->
-                </form>
+                <h5>Categories</h5>
+                <p id="form-filter"></p>
             </div>
 
             <div class="sidebar-pane" id="settings">
-                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+              <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+              <h5>Circle</h5>
+              <p>
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
+                  <input type="checkbox" id="switch-1" class="mdl-switch__input" checked>
+                  <span class="mdl-switch__label">Editable?</span>
+                </label>
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-2">
+                  <input type="checkbox" id="switch-2" class="mdl-switch__input" checked>
+                  <span class="mdl-switch__label">Draggable?</span>
+                </label>
+              </p>
             </div>
         </div>
     </div>
     <div id="map" class="sidebar-map"></div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script> -->
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBb4WL2GfoHsP_73RhsDOhJHVSYv14y678&libraries=places&callback=initMap" async defer></script> -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIkkdbUqYyfWnsoi5CjV-lzUt__xXWi8Y&libraries=places&callback=initMap" async defer></script>
     <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="js/jquery-sidebar.js"></script>
     <script>
@@ -174,7 +276,6 @@
         var sidebar = $('#sidebar').sidebar();
 
         $.each(types, (key, value) => {
-          // console.log(key, value);
           let $label = $('<label/>');
           let $input = $('<input/>');
           let $span = $('<span/>');
@@ -198,7 +299,23 @@
         });
 
         $('input[name="type[]"]').on('change', (e) => {
-          console.log($('#form-filter').serialize());
+          filterMarkers();
+        });
+
+        $('#switch-1').change(function() {
+          if ($(this).is(':checked')) {
+            circle.set('editable', true);
+          } else {
+            circle.set('editable', false);
+          }
+        });
+
+        $('#switch-2').change(function() {
+          if ($(this).is(':checked')) {
+            circle.set('draggable', true);
+          } else {
+            circle.set('draggable', false);
+          }
         });
       });
     </script>
