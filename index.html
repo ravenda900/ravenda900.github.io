@@ -29,7 +29,7 @@
     <script>
       // TODO
       // 1. Add new custom type
-      // 2. Add checkbox for circle toggle show/hide
+      // 3. Set center on drag
       var types = [
         'pizza',
         'burger',
@@ -38,7 +38,10 @@
         'barbecue',
         'seafood',
         'soup',
-        'noodles'
+        'noodles',
+        'lechon',
+        'salad',
+        'dessert'
       ];
       var map;
       var infowindow;
@@ -126,6 +129,7 @@
           infowindow.setContent('<div> \
             <strong>' + place.name + '</strong><br>\
             ' + place.formatted_address + '<br>\
+            <strong>Rating: </strong>' + parseFloat(place.rating).toFixed(1) + '<br>\
           </div');
           infowindow.open(map, this);
 
@@ -266,9 +270,9 @@
         </div>
     </div>
     <div id="map" class="sidebar-map"></div>
-    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script> -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script>
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBb4WL2GfoHsP_73RhsDOhJHVSYv14y678&libraries=places&callback=initMap" async defer></script> -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIkkdbUqYyfWnsoi5CjV-lzUt__xXWi8Y&libraries=places&callback=initMap" async defer></script>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIkkdbUqYyfWnsoi5CjV-lzUt__xXWi8Y&libraries=places&callback=initMap" async defer></script> -->
     <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="js/jquery-sidebar.js"></script>
     <script>
