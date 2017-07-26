@@ -71,6 +71,19 @@
           width: 60px;
           height: 60px;
         }
+
+        .marker-counter {
+          background-color: rgba(0,0,0,0.7);
+          color: #fff;
+          position: absolute;
+          border-radius: 2px;
+          left: 75px;
+          bottom: 5px;
+          font-size: 10px;
+          padding: 5px 10px;
+          text-transform: uppercase;
+          font-family: Arial, sans-serif;
+        }
     </style>
     <script>
       // TODO
@@ -100,6 +113,7 @@
       var loc = cebu;
       var population = 922611; //922,611
       var radius = Math.sqrt(population) * 100;
+      var marker_counter = 0;
 
       function initMap() {
         directionsDisplay = new google.maps.DirectionsRenderer();
@@ -107,8 +121,7 @@
 
         map = new google.maps.Map(document.getElementById('map'), {
           center: cebu,
-          zoom: 9,
-          // mapTypeId: 'terrain'
+          zoom: 9
         });
         directionsDisplay.setMap(map);
 
@@ -183,7 +196,10 @@
           map: map
         });
 
+        marker.visit_count = 0;
+
         google.maps.event.addListener(marker, 'click', function() {
+          marker.visit_count++;
           service.getDetails({
             placeId: place.place_id
           }, function(pl, status) {
@@ -205,9 +221,10 @@
           });
 
           infowindow.setContent('<div> \
-            <strong>' + place.name + '</strong><br>\
-            ' + place.formatted_address + '<br>\
-            <strong>Rating: </strong>' + parseFloat(place.rating).toFixed(1) + '<br>\
+            <strong>' + place.name + '</strong><br> \
+            ' + place.formatted_address + '<br> \
+            <strong>Rating: </strong>' + parseFloat(place.rating).toFixed(1) + '<br> \
+            Visited: ' + marker.visit_count + ' times<br> \
           </div');
           infowindow.open(map, this);
 
@@ -234,6 +251,8 @@
         });
 
         markers.push(marker);
+        marker_counter++;
+        $('.marker-counter').find('span').text(marker_counter);
       }
 
       function setMapOnAll(map) {
@@ -249,6 +268,7 @@
       function deleteMarkers() {
         clearMarkers();
         markers = [];
+        marker_counter = 0;
       }
 
       function showMarkers() {
@@ -341,8 +361,9 @@
         </div>
     </div>
     <div id="map" class="sidebar-map"></div>
-    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script> -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBb4WL2GfoHsP_73RhsDOhJHVSYv14y678&libraries=places&callback=initMap" async defer></script>
+    <div class="marker-counter">No of traced restaurants: <span></span></div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBb4WL2GfoHsP_73RhsDOhJHVSYv14y678&libraries=places&callback=initMap" async defer></script> -->
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIkkdbUqYyfWnsoi5CjV-lzUt__xXWi8Y&libraries=places&callback=initMap" async defer></script> -->
     <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="js/jquery-sidebar.js"></script>
