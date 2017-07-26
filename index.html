@@ -38,6 +38,15 @@
           display: inline;
         }
 
+        .mdl-list__item-primary-content h5 .mdl-list__item-secondary-action {
+          display: inline-block;
+          vertical-align: middle;
+        }
+
+        .mdl-list__item--three-line .mdl-list__item-text-body {
+          height: auto;
+        }
+
         .review-counter {
           border-radius: 100%;
           background-color: rgb(255,64,129);
@@ -158,13 +167,12 @@
         return '<li class="mdl-list__item mdl-list__item--three-line"> \
           <span class="mdl-list__item-primary-content"> \
             <img src="' + review.profile_photo_url + '" alt="' + review.author_name + '" /> \
-            <h5>' + review.author_name + '</h5> \
+            <h5>' + review.author_name + ' \
+              <a class="mdl-list__item-secondary-action" href="#" title="' + review.rating.toFixed(1) + '"><i class="material-icons">star</i></a> \
+            </h5> \
             <p class="mdl-list__item-text-body" title="' + review.relative_time_description + '"> \
               ' + review.text + ' \
             </span> \
-          </span> \
-          <span class="mdl-list__item-secondary-content"> \
-            <a class="mdl-list__item-secondary-action" href="#" title="' + review.rating.toFixed(1) + '"><i class="material-icons">star</i></a> \
           </span> \
         </li>';
       }
@@ -333,8 +341,8 @@
         </div>
     </div>
     <div id="map" class="sidebar-map"></div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script>
-    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBb4WL2GfoHsP_73RhsDOhJHVSYv14y678&libraries=places&callback=initMap" async defer></script> -->
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script> -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBb4WL2GfoHsP_73RhsDOhJHVSYv14y678&libraries=places&callback=initMap" async defer></script>
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIkkdbUqYyfWnsoi5CjV-lzUt__xXWi8Y&libraries=places&callback=initMap" async defer></script> -->
     <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="js/jquery-sidebar.js"></script>
