@@ -225,6 +225,8 @@
             handleLocationError(false, infoWindow, map.getCenter());
           }
         });
+
+        markers.push(marker);
       }
 
       function setMapOnAll(map) {
@@ -254,8 +256,7 @@
           }
         }).get();
 
-        clearMarkers();
-        markers = [];
+        deleteMarkers();
         scanRestaurants(service, loc, radius);
       }
 
