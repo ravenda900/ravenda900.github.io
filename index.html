@@ -92,14 +92,14 @@
       var types = [
         'pizza',
         'burger',
-        'pasta',
+        /*'pasta',
         'chicken',
         'barbecue',
         'seafood',
         'soup',
         'noodles',
         'lechon',
-        'salad'
+        'salad'*/
       ];
       var map;
       var infowindow;
@@ -190,6 +190,32 @@
         </li>';
       }
 
+      function getReviews(place) {
+        service.getDetails({
+          placeId: place.place_id
+        }, function(pl, status) {
+          if (status == google.maps.places.PlacesServiceStatus.OK) {
+            $(() => {
+              var $reviews = $('[href="#reviews"]');
+              var $list = $('#reviews').find('.mdl-list');
+
+              $('#reviews').find('.review-counter').text(pl.reviews.length);
+              $list.empty();
+
+              for (let i = 0 ; i < pl.reviews.length ; i++) {
+                $list.append(listFormat(pl.reviews[i]));
+              }
+
+              if ($reviews.parent().hasClass('hide')) {
+                $reviews.parent().removeClass('hide');
+                $reviews.click();
+              }
+            });
+
+          }
+        });
+      }
+
       function addMarker(place) {
         var marker = new google.maps.Marker({
           position: place.geometry.location,
@@ -200,25 +226,7 @@
 
         google.maps.event.addListener(marker, 'click', function() {
           marker.visit_count++;
-          service.getDetails({
-            placeId: place.place_id
-          }, function(pl, status) {
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-              $(() => {
-                $('[href="#reviews"]').click();
-                $('[href="#reviews"]').parent().removeClass('hide');
-
-                var $list = $('#reviews').find('.mdl-list');
-                $('#reviews').find('.review-counter').text(pl.reviews.length);
-                $list.empty();
-
-                for (let i = 0 ; i < pl.reviews.length ; i++) {
-                  $list.append(listFormat(pl.reviews[i]));
-                }
-              });
-
-            }
-          });
+          getReviews(place);
 
           infowindow.setContent('<div> \
             <strong>' + place.name + '</strong><br> \
