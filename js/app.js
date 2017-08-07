@@ -41,22 +41,6 @@ $(() => {
     }
   });
 
-  $('.btn-route').on('click', function(e) {
-    e.preventDefault();
-
-    var $reviews = $('[href="#directions"]');
-
-    var lat = $(this).data('lat');
-    var lng = $(this).data('lng');
-
-    getDirections(lat, lng);
-
-    if ($reviews.parent().hasClass('hide')) {
-      $reviews.parent().removeClass('hide');
-      $reviews.click();
-    }
-  });
-
   $('.sidebar-close').click(function() {
     $('#reviews').find('.mdl-list').empty();
     $('#reviews').find('.review-counter').empty();

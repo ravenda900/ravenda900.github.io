@@ -150,6 +150,22 @@ function addMarker(place) {
       <button data-lat="' + place.geometry.location.lat() + '" data-lng="' + place.geometry.location.lng() + '" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored btn-route">Get Directions</button> \
     </div');
     infowindow.open(map, this);
+
+    $('.btn-route').on('click', function(e) {
+      e.preventDefault();
+
+      var $directions = $('[href="#directions"]');
+
+      var lat = $(this).data('lat');
+      var lng = $(this).data('lng');
+
+      getDirections(lat, lng);
+
+      if ($directions.parent().hasClass('hide')) {
+        $directions.parent().removeClass('hide');
+        $directions.click();
+      }
+    });
   });
 
   markers.push(marker);
