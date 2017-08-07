@@ -107,13 +107,13 @@
       var directionsDisplay;
       var directionsService;
       var markers = [];
-      var count = [];
       var circle;
       var cebu = {lat: 10.31672, lng: 123.89071};
       var loc = cebu;
       var population = 922611; //922,611
       var radius = Math.sqrt(population) * 100;
       var marker_counter = 0;
+      var markerCluster;
 
       function initMap() {
         directionsDisplay = new google.maps.DirectionsRenderer();
@@ -133,6 +133,9 @@
         });
 
         scanRestaurants(service, cebu, radius);
+
+        markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
 
         circle = new google.maps.Circle({
           strokeColor: '#0000FF',
@@ -368,6 +371,8 @@
     </div>
     <div id="map" class="sidebar-map"></div>
     <div class="marker-counter">No of traced restaurants: <span></span></div>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script> -->
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBb4WL2GfoHsP_73RhsDOhJHVSYv14y678&libraries=places&callback=initMap" async defer></script> -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIkkdbUqYyfWnsoi5CjV-lzUt__xXWi8Y&libraries=places&callback=initMap" async defer></script>
