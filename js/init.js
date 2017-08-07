@@ -154,7 +154,7 @@ function addMarker(place) {
 
     $('#directions-list').empty();
     $('[href="#directions"]').parent().addClass('hide');
-    if (!$('[href="#reviews"]').parent().hasClass('active')) {
+    if (!$('[href="#reviews"]').parent().hasClass('active') && !$('[href="#reviews"]').parent().hasClass('hide')) {
       $('[href="#reviews"]').click();
     }
 
