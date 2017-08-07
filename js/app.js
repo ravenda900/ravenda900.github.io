@@ -18,7 +18,7 @@ $(() => {
       name: 'type[]'
     }).addClass('mdl-checkbox__input');
 
-    if (key === 1) {
+    if (key === 0) {
       $input.prop('checked', true);
     }
 
