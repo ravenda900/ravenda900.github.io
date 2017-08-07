@@ -46,7 +46,6 @@ function initMap() {
     infowindow.close();
   });
 
-  init = true;
   scanRestaurants(service, cebu, radius);
   markerCluster = new MarkerClusterer(map, markers, {
     imagePath: './images/m'
@@ -234,12 +233,12 @@ function filterMarkers() {
 }
 
 function scanRestaurants(service, location, radius) {
-  if (init) {
-    init = false;
+  if ( ! init) {
+    init = true;
     placeSearch(types[0]);
   } else {
     for (let i = 0 ; i < types.length ; i++) {
-      placeSearch(types[i])
+      placeSearch(types[i]);
     }
   }
   clearMarkers();
