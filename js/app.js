@@ -45,6 +45,7 @@ $(() => {
     $('#reviews').find('.mdl-list').empty();
     $('#reviews').find('.review-counter').empty();
     $('[href="#reviews"]').parent().addClass('hide');
+    $('[href="#directions"]').parent().addClass('hide');
   });
 
   $('#switch-2').change(function() {

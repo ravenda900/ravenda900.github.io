@@ -26,6 +26,7 @@ var population = 922611; //922,611
 var radius = Math.sqrt(population) * 100;
 var marker_counter = 0;
 var markerCluster;
+var init = false;
 
 function initMap() {
   directionsDisplay = new google.maps.DirectionsRenderer();
@@ -45,6 +46,7 @@ function initMap() {
     infowindow.close();
   });
 
+  init = true;
   scanRestaurants(service, cebu, radius);
   markerCluster = new MarkerClusterer(map, markers, {
     imagePath: './images/m'
@@ -151,6 +153,9 @@ function addMarker(place) {
     </div');
     infowindow.open(map, this);
 
+    $('#directions-list').empty();
+    $('[href="#directions"]').parent().addClass('hide');
+
     $('.btn-route').on('click', function(e) {
       e.preventDefault();
 
@@ -229,14 +234,25 @@ function filterMarkers() {
 }
 
 function scanRestaurants(service, location, radius) {
+  if (init) {
+    init = false;
+    placeSearch(types[0]);
+  } else {
+    for (let i = 0 ; i < types.length ; i++) {
+      placeSearch(types[i])
+    }
+  }
+  clearMarkers();
+}
+
+function placeSearch(place) {
   var request = {
     location: location,
     radius: radius,
-    query: types[0],
+    query: place,
     type: ['restaurant']
   };
   service.textSearch(request, callback);
-  clearMarkers();
 }
 
 function callback(results, status) {
