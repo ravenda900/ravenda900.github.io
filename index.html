@@ -133,6 +133,8 @@
         });
 
         scanRestaurants(service, cebu, radius);
+        clearMarkers();
+        showMarkers();
 
         circle = new google.maps.Circle({
           strokeColor: '#0000FF',
@@ -262,6 +264,8 @@
       }
 
       function setMapOnAll(map) {
+        markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
         for (var i = 0; i < markers.length; i++) {
           markers[i].setMap(map);
         }
