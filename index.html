@@ -124,6 +124,7 @@
           zoom: 9
         });
         directionsDisplay.setMap(map);
+        directionsDisplay.setPanel(document.getElementById('directions-list'));
 
         infowindow = new google.maps.InfoWindow();
         service = new google.maps.places.PlacesService(map);
@@ -234,34 +235,37 @@
             ' + place.formatted_address + '<br> \
             <strong>Rating: </strong>' + parseFloat(place.rating).toFixed(1) + '<br> \
             Visited: ' + marker.visit_count + ' times<br> \
+            <button data-lat="' + place.geometry.location.lat() + '" data-lng="' + place.geometry.location.lng() + '" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored btn-route">Get Directions</button> \
           </div');
           infowindow.open(map, this);
-
-          // Directions
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-              var request = {
-                origin: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-                destination: new google.maps.LatLng(place.geometry.location.lat(), place.geometry.location.lng()),
-                travelMode: 'DRIVING'
-              };
-              directionsService.route(request, function(result, status) {
-                if (status == 'OK') {
-                  directionsDisplay.setDirections(result);
-                }
-              });
-            }, function() {
-              handleLocationError(true, infoWindow, map.getCenter());
-            });
-          } else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
-          }
         });
 
         markers.push(marker);
         marker_counter++;
         $('.marker-counter').find('span').text(marker_counter);
+      }
+
+      function getDirections(lat, lng) {
+        // Directions
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var request = {
+              origin: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+              destination: new google.maps.LatLng(lat, lng),
+              travelMode: 'DRIVING'
+            };
+            directionsService.route(request, function(result, status) {
+              if (status == 'OK') {
+                directionsDisplay.setDirections(result);
+              }
+            });
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
       }
 
       function setMapOnAll(map) {
@@ -326,6 +330,7 @@
                 <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
                 <li><a href="https://github.com/ravenda900/ravenda900.github.io" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
                 <li class="hide" title="Click a marker to view user reviews"><a href="#reviews" role="tab" target="_blank"><i class="fa fa-user"></i></a></li>
+                <li class="hide"><a href="#directions" role="tab" target="_blank"><i class="fa fa-map-signs"></i></a></li>
             </ul>
 
             <ul role="tablist">
@@ -368,15 +373,24 @@
 
                 <ul class="mdl-list"></ul>
             </div>
+
+            <div class="sidebar-pane" id="directions">
+                <h1 class="sidebar-header">
+                    Directions
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <p id="directions-list"></p>
+            </div>
         </div>
     </div>
     <div id="map" class="sidebar-map"></div>
     <div class="marker-counter">No of traced restaurants: <span></span></div>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
     </script>
-    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&callback=initMap" async defer></script> -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxlCY3Fma4zvmfVJq0uH2vhAGe1EhMgnk&libraries=places&Categoriesllback=initMap" async defer></script>
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBb4WL2GfoHsP_73RhsDOhJHVSYv14y678&libraries=places&callback=initMap" async defer></script> -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIkkdbUqYyfWnsoi5CjV-lzUt__xXWi8Y&libraries=places&callback=initMap" async defer></script>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIkkdbUqYyfWnsoi5CjV-lzUt__xXWi8Y&libraries=places&callback=initMap" async defer></script> -->
     <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="js/jquery-sidebar.js"></script>
     <script>
@@ -415,6 +429,22 @@
             circle.set('editable', true);
           } else {
             circle.set('editable', false);
+          }
+        });
+
+        $('.btn-route').on('click', function(e) {
+          e.preventDefault();
+
+          var $reviews = $('[href="#directions"]');
+
+          var lat = $(this).data('lat');
+          var lng = $(this).data('lng');
+
+          getDirections(lat, lng);
+
+          if ($reviews.parent().hasClass('hide')) {
+            $reviews.parent().removeClass('hide');
+            $reviews.click();
           }
         });
 
