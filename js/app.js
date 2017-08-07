@@ -41,7 +41,7 @@ $(() => {
     }
   });
 
-  /*$('.btn-route').on('click', function(e) {
+  $('.btn-route').on('click', function(e) {
     e.preventDefault();
 
     var $reviews = $('[href="#directions"]');
@@ -56,7 +56,7 @@ $(() => {
       $reviews.click();
     }
   });
-*/
+
   $('.sidebar-close').click(function() {
     $('#reviews').find('.mdl-list').empty();
     $('#reviews').find('.review-counter').empty();

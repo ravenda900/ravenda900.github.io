@@ -36,7 +36,7 @@ function initMap() {
     zoom: 9
   });
   directionsDisplay.setMap(map);
-  // directionsDisplay.setPanel(document.getElementById('directions-list'));
+  directionsDisplay.setPanel(document.getElementById('directions-list'));
 
   infowindow = new google.maps.InfoWindow();
   service = new google.maps.places.PlacesService(map);
@@ -157,28 +157,28 @@ function addMarker(place) {
   $('.marker-counter').find('span').text(marker_counter);
 }
 
-// function getDirections(lat, lng) {
-//   // Directions
-//   if (navigator.geolocation) {
-//     navigator.geolocation.getCurrentPosition(function(position) {
-//       var request = {
-//         origin: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-//         destination: new google.maps.LatLng(lat, lng),
-//         travelMode: 'DRIVING'
-//       };
-//       directionsService.route(request, function(result, status) {
-//         if (status == 'OK') {
-//           directionsDisplay.setDirections(result);
-//         }
-//       });
-//     }, function() {
-//       handleLocationError(true, infoWindow, map.getCenter());
-//     });
-//   } else {
-//     // Browser doesn't support Geolocation
-//     handleLocationError(false, infoWindow, map.getCenter());
-//   }
-// }
+function getDirections(lat, lng) {
+  // Directions
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var request = {
+        origin: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+        destination: new google.maps.LatLng(lat, lng),
+        travelMode: 'DRIVING'
+      };
+      directionsService.route(request, function(result, status) {
+        if (status == 'OK') {
+          directionsDisplay.setDirections(result);
+        }
+      });
+    }, function() {
+      handleLocationError(true, infoWindow, map.getCenter());
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  }
+}
 
 function setMapOnAll(map) {
   for (var i = 0; i < markers.length; i++) {
