@@ -152,25 +152,23 @@
           };
 
           radius = circle.getRadius();
-          setTimeout(function() {
-            deleteMarkers();
-            scanRestaurants(service, location, radius);
-          }, 1500);
+          
+          deleteMarkers();
+          scanRestaurants(service, location, radius);
 
           console.log('Radius has been changed to: ' + circle.getRadius());
         });
 
-        google.maps.event.addListener(circle, 'center_changed', function() {
+        google.maps.event.addListener(circle, 'dragend', function() {
           var location = {
             lat: circle.getCenter().lat(),
             lng: circle.getCenter().lng()
           };
 
           loc = location;
-          setTimeout(function() {
-            deleteMarkers();
-            scanRestaurants(service, location, circle.getRadius());
-          }, 1500);
+
+          deleteMarkers();
+          scanRestaurants(service, location, circle.getRadius());
 
           console.log('Center has been changed to: ', location);
         });
