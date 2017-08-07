@@ -233,13 +233,17 @@ function filterMarkers() {
 }
 
 function scanRestaurants(service, location, radius) {
-  if ( ! init) {
+  /*if ( ! init) {
     init = true;
     placeSearch(types[0]);
   } else {
     for (let i = 0 ; i < types.length ; i++) {
       placeSearch(types[i]);
     }
+  }*/
+
+  for (let i = 0 ; i < types.length ; i++) {
+    placeSearch(types[i]);
   }
   clearMarkers();
 }
