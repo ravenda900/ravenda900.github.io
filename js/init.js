@@ -154,6 +154,7 @@ function addMarker(place) {
 
     $('#directions-list').empty();
     $('[href="#directions"]').parent().addClass('hide');
+    $sidebar.open('directions', $('[href="#directions"]').parent());
 
     $('.btn-route').on('click', function(e) {
       e.preventDefault();

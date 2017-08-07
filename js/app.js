@@ -1,6 +1,6 @@
 
 $(() => {
-  var sidebar = $('#sidebar').sidebar();
+  var $sidebar = $('#sidebar').sidebar();
 
   $.each(types, (key, value) => {
     let $label = $('<label/>');
