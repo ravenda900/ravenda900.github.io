@@ -133,6 +133,9 @@
         });
 
         scanRestaurants(service, cebu, radius);
+        markerCluster = new MarkerClusterer(map, markers, {
+          imagePath: './images/m'
+        });
 
         circle = new google.maps.Circle({
           strokeColor: '#0000FF',
@@ -303,6 +306,7 @@
           };
           service.textSearch(request, callback);
         }
+        clearMarkers();
       }
 
       function callback(results, status) {
@@ -310,9 +314,6 @@
           for (let i = 0 ; i < results.length ; i++) {
             addMarker(results[i]);
           }
-
-          markerCluster = new MarkerClusterer(map, markers,
-              {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
         }
       }
     </script>
