@@ -233,28 +233,28 @@ function filterMarkers() {
 }
 
 function scanRestaurants(service, location, radius) {
-  /*if ( ! init) {
+  if ( ! init) {
     init = true;
-    placeSearch(types[0]);
+    placeSearch({
+      location: location,
+      radius: radius,
+      query: types[0]
+    });
   } else {
     for (let i = 0 ; i < types.length ; i++) {
-      placeSearch(types[i]);
+      placeSearch({
+        location: location,
+        radius: radius,
+        query: types[i]
+      });
     }
-  }*/
-
-  for (let i = 0 ; i < types.length ; i++) {
-    placeSearch(types[i]);
   }
   clearMarkers();
 }
 
-function placeSearch(place) {
-  var request = {
-    location: location,
-    radius: radius,
-    query: place,
-    type: ['restaurant']
-  };
+function placeSearch(request) {
+  request.type = ['restaurant'];
+
   service.textSearch(request, callback);
 }
 
