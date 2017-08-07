@@ -110,8 +110,7 @@
       var circle;
       var cebu = {lat: 10.31672, lng: 123.89071};
       var loc = cebu;
-      var population = 922611; //922,611
-      var radius = Math.sqrt(population) * 100;
+      var radius = 500;
       var marker_counter = 0;
       var markerCluster;
 
@@ -306,7 +305,6 @@
           };
           service.textSearch(request, callback);
         }
-        clearMarkers();
       }
 
       function callback(results, status) {
