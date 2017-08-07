@@ -36,7 +36,7 @@ function initMap() {
     zoom: 9
   });
   directionsDisplay.setMap(map);
-  directionsDisplay.setPanel(document.getElementById('directions-list'));
+  // directionsDisplay.setPanel(document.getElementById('directions-list'));
 
   infowindow = new google.maps.InfoWindow();
   service = new google.maps.places.PlacesService(map);
