@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <link href="app.css" rel="stylesheet">
+    <title>DemiGods' Riddle Party Event</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/5.5.5/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/5.5.5/firebase-database.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <v-app id="inspire">
+        <v-navigation-drawer
+          fixed
+          clipped
+          class="grey lighten-4"
+          app
+          v-model="drawer"
+        >
+          <v-list
+            dense
+            class="grey lighten-4"
+          >
+            <template v-for="(item, i) in items">
+              <v-divider
+                dark
+                v-if="item.divider"
+                class="my-3"
+                :key="i"
+              ></v-divider>
+              <v-list-tile
+                :key="i"
+                v-else
+                @click="$router.push(item.path)"
+              >
+                <v-list-tile-action>
+                  <v-icon>{{ item.icon }}</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title class="grey--text" >
+                    {{ item.text }}
+                  </v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </template>
+          </v-list>
+        </v-navigation-drawer>
+        <v-toolbar color="red darken-3" dark app absolute clipped-left>
+          <v-toolbar-side-icon @click.native="drawer = !drawer"></v-toolbar-side-icon>
+          <span class="title ml-3 mr-5">DemiGods'&nbsp;<span class="text">Riddle Party Event</span></span>
+        </v-toolbar>
+        <v-content>
+          <v-container fluid fill-height class="grey lighten-4">
+            <router-view></router-view>
+          </v-container>
+        </v-content>
+      </v-app>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyAuJwJLiZvYTRSxg7smSLHXVId794mYeLU",
+        authDomain: "demigods-1a261.firebaseapp.com",
+        databaseURL: "https://demigods-1a261.firebaseio.com",
+        projectId: "demigods-1a261",
+        storageBucket: "demigods-1a261.appspot.com",
+        messagingSenderId: "848959578456"
+      };
+      firebase.initializeApp(config);
+    </script>
+    <script type="text/x-template" id="mechanics-template">
+      <v-layout justify-center>
+        <v-flex xs-12>
+          <h6 class="title mb-3">Mechanics</h6>
+          <p class="subheading">Good Day Adventurers! It's time for a game knowledge challenge that will test out on how much you know about the whole game in Dragon Nest Mobile.</p>
+          <p class="body-2">The mechanics is simple. It's just the same to the Riddle Party on the Dragon Nest Mobile <span class="red--text">BUT</span> the questions are all game-related stuffs and the computation of the score is different from the actual game.</p>
+          <p class="body-1">Answer each question with a total of twenty(20) questions. Each question will have a 20-second timer.</p>
+          <p class="body-1">The faster you answer, the larger amount of score you will get for each question.</p>
+          <p><span class="red--text">NOTE:</span> This event is <strong>EXCLUSIVE</strong> to <span class="primary--text">DemiGods'</span> members and officials.</p>
+          <p class="body-1">Click <router-link to="questions">here</router-link> to have an exercise of the game.</p>
+        </v-flex>
+      </v-layout>
+    </script>
+    <script type="text/x-template" id="scoreboard-template">
+      <v-layout row>
+        <v-flex xs12 sm6 offset-sm3>
+          <v-list dense>
+            <template v-for="(item, index) in items">
+              <v-list-tile
+                :key="getOrdinalNumber(index + 1)"
+                avatar
+                ripple
+                @click
+              >
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ getOrdinalNumber(index + 1) }} - {{ item.title }}</v-list-tile-title>
+                  <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
+                  <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+                </v-list-tile-content>
+
+                <v-list-tile-action>
+                  <v-list-tile-action-text>{{ item.action }}</v-list-tile-action-text>
+                </v-list-tile-action>
+
+              </v-list-tile>
+              <v-divider
+                v-if="index + 1 < items.length"
+                :key="index"
+              ></v-divider>
+            </template>
+          </v-list>
+        </v-flex>
+      </v-layout>
+    </script>
+    <script type="text/x-template" id="questions-template">
+      <v-layout justify-center v-if="isDataLoaded">
+        <v-flex xs-12>
+          <h6 class="title mb-3">Question {{ currentIndex + 1 }}: {{ currentQuestion.question }}</h6>
+        </v-flex>
+        <v-flex xs-6>
+          <v-btn round block color="primary" xs-6 dark v-for="choice in currentQuestion.choices.split(', ')" :key="choice">{{ choice }}</v-btn>
+        </v-flex>
+      </v-layout>
+    </script>
+    <script type="text/x-template" id="add-question-template">
+      <v-layout justify-center align-center>
+        <v-flex xs12 sm6 md6>
+          <h1>Add Question</h1>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-text-field
+              v-model="question"
+              :rules="questionRules"
+              :counter="100"
+              label="Question"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="answer"
+              :rules="answerRules"
+              label="Answer"
+              required
+            ></v-text-field>
+            <v-combobox
+              v-model="choices"
+              :rules="choicesRules"
+              hide-selected
+              hint="Must be 4 choices"
+              label="Add 4 choices"
+              multiple
+              persistent-hint
+              small-chips
+            >
+            </v-combobox>
+            <div class="mt-5">
+              <v-btn
+                :disabled="!valid"
+                @click="submit"
+                class="ml-0"
+              >
+                submit
+              </v-btn>
+              <v-btn
+                @click="clear"
+                class="ml-0">
+                clear
+              </v-btn>
+            </div>
+          </v-form>
+        </v-flex>
+      </v-layout>
+    </script>
+    <script type="text/x-template" id="home-template">
+      <v-layout justify-center align-center>
+        <v-flex xs12 sm6 md6>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-text-field
+              v-model="ign"
+              :append-outer-icon="'send'"
+              clearable
+              label="Your IGN"
+              type="text"
+              :rules="[rules.required, rules.counter]"
+              counter="25"
+              hint="Please provide it without any prefix, suffix, signature and/or symbols in it."
+              @click:append-outer="submit"
+              @click:clear="clear"
+            ></v-text-field>
+          </v-form>
+        </v-flex>
+      </v-layout>
+    </script>
+    <script src="./components/home.js"></script>
+    <script src="./components/questions.js"></script>
+    <script src="./components/mechanics.js"></script>
+    <script src="./components/scores.js"></script>
+    <script src="./components/add-question.js"></script>
+    <script src="route.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
