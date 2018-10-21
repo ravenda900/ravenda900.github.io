@@ -89,7 +89,7 @@
           <p class="body-2">The mechanics is simple. It's just the same to the Riddle Party on the Dragon Nest Mobile <span class="red--text">BUT</span> the questions are all game-related stuffs and the computation of the score is different from the actual game.</p>
           <p class="body-1">Answer each question with a total of twenty(20) questions. Each question will have a 20-second timer.</p>
           <p class="body-1">The faster you answer, the larger amount of score you will get for each question.</p>
-          <p><span class="red--text">NOTE:</span> This event is <strong>EXCLUSIVE</strong> to <span class="primary--text">DemiGods'</span> members and officials.</p>
+          <p><span class="red--text">NOTE:</span> This event is <strong>EXCLUSIVE</strong> for <span class="primary--text">DemiGods'</span> members and officials only.</p>
           <p class="body-1">Click <router-link to="questions">here</router-link> to have an exercise of the game.</p>
         </v-flex>
       </v-layout>
@@ -127,18 +127,48 @@
     </script>
     <script type="text/x-template" id="questions-template">
       <v-layout justify-center v-if="isDataLoaded">
-        <v-flex xs-12>
-          <h6 class="title mb-3">Question {{ currentIndex + 1 }}: {{ currentQuestion.question }}</h6>
-        </v-flex>
-        <v-flex xs-6>
-          <v-btn round block color="primary" xs-6 dark v-for="choice in currentQuestion.choices.split(', ')" :key="choice">{{ choice }}</v-btn>
+        <v-flex xs6>
+          <h6 class="title mb-3 text-xs-center">{{ timer }}</h6>
+          <p class="caption">Current Score: {{ score }}pts ({{ (score / (totalQuestions * totalTime * points) * 100).toFixed(2) }}%)</p>
+          <p class="subheading mb-3">Question #{{ currentIndex + 1 }}: {{ currentQuestion.question }}</p>
+          <v-btn
+            block
+            outline
+            color="red darken-3"
+            class="mb-3"
+            v-for="choice in currentQuestion.choices.split(', ')"
+            :disabled="answer !== null"
+            :key="choice"
+            @click="setAnswer(choice)">
+            {{ choice }}
+          </v-btn>
+          <v-btn
+            block
+            outline
+            color="red darken-3"
+            class="mb-3"
+            v-if="answer !== null && (currentIndex + 1 !== totalQuestions)"
+            @click="skipQuestion">
+            Next question &gt;
+          </v-btn>
+
+          <v-btn
+            block
+            outline
+            color="red darken-3"
+            class="mb-3"
+            v-if="answer !== null && (currentIndex + 1 === totalQuestions)"
+            @click="submitScore">
+            Go to scoreboard &gt;
+          </v-btn>
         </v-flex>
       </v-layout>
     </script>
     <script type="text/x-template" id="add-question-template">
       <v-layout justify-center align-center>
-        <v-flex xs12 sm6 md6>
-          <h1>Add Question</h1>
+        <v-flex xs12 sm6 md6 v-if="isDataLoaded">
+          <h6 class="title">Add Question</h6>
+          <p class="caption">Total Questions: {{ totalQuestions }}</p>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-text-field
               v-model="question"

@@ -11,8 +11,8 @@ const Home = Vue.component('home', {
   methods: {
     submit () {
       if (this.$refs.form.validate()) {
-        let firebaseRef = firebase.database().ref();
-        let ignsRef = firebaseRef.child('IGNs').push();
+        const firebaseRef = firebase.database().ref();
+        const ignsRef = firebaseRef.child('IGNs').push();
         ignsRef.set({
           ign: this.ign,
           date: firebase.database.ServerValue.TIMESTAMP

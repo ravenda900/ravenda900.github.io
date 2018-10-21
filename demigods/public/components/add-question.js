@@ -18,7 +18,9 @@ const AddQuestion = Vue.component('add-question', {
           v => !!v || 'Choices is required',
           v => (v && v.length === 4) || 'Choices must have 4 values'
       ],
-      search: null
+      search: null,
+      isDataLoaded: false,
+      totalQuestions: 0
     }
   },
   watch: {
@@ -31,8 +33,8 @@ const AddQuestion = Vue.component('add-question', {
   methods: {
     submit () {
       if (this.$refs.form.validate()) {
-        let firebaseRef = firebase.database().ref();
-        let questionsRef = firebaseRef.child('Questions').push();
+        const firebaseRef = firebase.database().ref();
+        const questionsRef = firebaseRef.child('Questions').push();
         questionsRef.set({
           question: this.question,
           answer: this.answer,
@@ -50,5 +52,14 @@ const AddQuestion = Vue.component('add-question', {
     clear () {
       this.$refs.form.reset()
     }
+  },
+  mounted () {
+    let questionsRef = firebase.database().ref('Questions');
+
+    questionsRef.on('value', (snapshot) => {
+      let keys = Object.keys(snapshot.val());
+      this.totalQuestions = keys.length
+      this.isDataLoaded = true;
+    });
   }
 });
