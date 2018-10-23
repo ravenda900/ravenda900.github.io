@@ -2,28 +2,15 @@ const Scores = Vue.component('scoreboard', {
   template: '#scoreboard-template',
   data () {
     return {
-      items: [
-        {
-          action: '60%',
-          title: 'Ravenda'
-        },
-        {
-          action: '79%',
-          title: 'Ravenda1'
-        },
-        {
-          action: '91%',
-          title: 'Ravenda2'
-        },
-        {
-          action: '49%',
-          title: 'Ravenda3'
-        },
-        {
-          action: '87%',
-          title: 'Ravenda4'
-        }
-      ]
+      items: [],
+      totalQuestions: 20,
+      totalTime: 20,
+      points: 10
+    }
+  },
+  computed: {
+    sortedItems () {
+      return this.items.sort((a, b) => a.totalScore - b.totalScore).reverse();
     }
   },
   methods: {
@@ -41,5 +28,17 @@ const Scores = Vue.component('scoreboard', {
       }
       return i + 'th';
     }
+  },
+  mounted () {
+    let scoresRef = firebase.database().ref('Scores').orderByChild('totalScore');
+
+    scoresRef.on('value', (snapshot) => {
+      this.items = [];
+      const scores = snapshot.val();
+      const uids = Object.keys(scores);
+      for (let i = 0 ; i < uids.length ; i++) {
+        this.items.push(scores[uids[i]]);
+      }
+    });
   }
 });

@@ -8,10 +8,12 @@ new Vue({
     drawer: null,
     items: [
       { icon: 'home', text: 'Home', path: '/' },
-      { icon: 'assignment', text: 'Mechanics', path: 'mechanics' },
-      { icon: 'list', text: 'Scores', path: 'scores' },
       { divider: true },
-      { icon: 'help', text: 'Add Question', path: 'add-question' }
+      // { icon: 'assignment', text: 'Mechanics', path: 'mechanics' },
+      { icon: 'redeem', text: 'Rewards', path: 'rewards' },
+      { divider: true },
+      // { icon: 'help', text: 'Add Question', path: 'add-question' },
+      { icon: 'list', text: 'Scores', path: 'scores' }
     ]
   },
   props: {

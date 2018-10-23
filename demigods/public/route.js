@@ -1,8 +1,11 @@
 const routes = [{
   path: '/',
   component: Home
+},{
+  path: '/rewards',
+  component: Rewards
 }, {
-  path: '/Questions',
+  path: '/questions',
   component: Questions
 }, {
   path: '/mechanics',

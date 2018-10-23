@@ -54,7 +54,7 @@ const AddQuestion = Vue.component('add-question', {
     }
   },
   mounted () {
-    let questionsRef = firebase.database().ref('Questions');
+    const questionsRef = firebase.database().ref('Questions');
 
     questionsRef.on('value', (snapshot) => {
       let keys = Object.keys(snapshot.val());

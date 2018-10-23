@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <link rel="shortcut icon" href="./images/logo.png">
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
     <link href="app.css" rel="stylesheet">
@@ -88,17 +89,33 @@
           <p class="subheading">Good Day Adventurers! It's time for a game knowledge challenge that will test out on how much you know about the whole game in Dragon Nest Mobile.</p>
           <p class="body-2">The mechanics is simple. It's just the same to the Riddle Party on the Dragon Nest Mobile <span class="red--text">BUT</span> the questions are all game-related stuffs and the computation of the score is different from the actual game.</p>
           <p class="body-1">Answer each question with a total of twenty(20) questions. Each question will have a 20-second timer.</p>
-          <p class="body-1">The faster you answer, the larger amount of score you will get for each question.</p>
+          <p class="body-1">The faster you answer, the larger amount of score you will get for each question. <strong>HAPPY GAMING!!!</strong> — Mr.ITik</p>
           <p><span class="red--text">NOTE:</span> This event is <strong>EXCLUSIVE</strong> for <span class="primary--text">DemiGods'</span> members and officials only.</p>
-          <p class="body-1">Click <router-link to="questions">here</router-link> to have an exercise of the game.</p>
+          <p class="body-1">Click <router-link to="questions">HERE</router-link> to start the game.</p>
+        </v-flex>
+      </v-layout>
+    </script>
+    <script type="text/x-template" id="rewards-template">
+      <v-layout justify-center>
+        <v-flex xs-12>
+          <h6 class="title mb-3">Rewards</h6>
+          <ul>
+            <li>1st - P500 worth of dias</li>
+            <li>2nd - P400 worth of dias</li>
+            <li>3rd - P300 worth of dias</li>
+            <li>4th & 5th - P100 worth of dias</li>
+            <li>6th to 10th will have consolation rewards through 900 worth dias run(I don't know the exact amount per head when divided)</li>
+          </ul>
+          <p class="body-1 mt-3"><span class="red--text">NOTE:</span> The rewards mentioned above <strong>EXCEPT</strong> for the dias bounty run will be sent thru <strong>PayMaya/Codapay</strong>. All rewards will be given tomorrow.  — Mr.ITik</p>
         </v-flex>
       </v-layout>
     </script>
     <script type="text/x-template" id="scoreboard-template">
       <v-layout row>
         <v-flex xs12 sm6 offset-sm3>
+          <h6 class="title mb-3">Scoreboard</h6>
           <v-list dense>
-            <template v-for="(item, index) in items">
+            <template v-for="(item, index) in sortedItems">
               <v-list-tile
                 :key="getOrdinalNumber(index + 1)"
                 avatar
@@ -106,13 +123,11 @@
                 @click
               >
                 <v-list-tile-content>
-                  <v-list-tile-title>{{ getOrdinalNumber(index + 1) }} - {{ item.title }}</v-list-tile-title>
-                  <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
-                  <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+                  <v-list-tile-title>{{ getOrdinalNumber(index + 1) }} - {{ item.ign }}</v-list-tile-title>
                 </v-list-tile-content>
 
                 <v-list-tile-action>
-                  <v-list-tile-action-text>{{ item.action }}</v-list-tile-action-text>
+                  <v-list-tile-action-text>{{ item.totalScore }}pts ({{ ((item.totalScore / (totalQuestions * totalTime * points)) * 100).toFixed(2) }}%)</v-list-tile-action-text>
                 </v-list-tile-action>
 
               </v-list-tile>
@@ -215,6 +230,8 @@
     <script type="text/x-template" id="home-template">
       <v-layout justify-center align-center>
         <v-flex xs12 sm6 md6>
+          <h1 class="display-3 red--text text-xs-center">DemiGods' Riddle Party Event</h1>
+          <blockquote class="blockquote">Talent wins games, but teamwork and intelligence wins championships. — Michael Jordan</blockquote>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-text-field
               v-model="ign"
@@ -224,17 +241,22 @@
               type="text"
               :rules="[rules.required, rules.counter]"
               counter="25"
-              hint="Please provide it without any prefix, suffix, signature and/or symbols in it."
+              hint="Please provide it without any prefix, suffix, signature and/or symbols."
               @click:append-outer="submit"
               @click:clear="clear"
             ></v-text-field>
           </v-form>
         </v-flex>
+       </v-layout>
+    </script>
+    <script type="text/x-template" id="ign-template">
+      <v-layout justify-center align-center>
       </v-layout>
     </script>
     <script src="./components/home.js"></script>
     <script src="./components/questions.js"></script>
     <script src="./components/mechanics.js"></script>
+    <script src="./components/rewards.js"></script>
     <script src="./components/scores.js"></script>
     <script src="./components/add-question.js"></script>
     <script src="route.js"></script>

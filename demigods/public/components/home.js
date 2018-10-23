@@ -11,18 +11,8 @@ const Home = Vue.component('home', {
   methods: {
     submit () {
       if (this.$refs.form.validate()) {
-        const firebaseRef = firebase.database().ref();
-        const ignsRef = firebaseRef.child('IGNs').push();
-        ignsRef.set({
-          ign: this.ign,
-          date: firebase.database.ServerValue.TIMESTAMP
-        }, (error) => {
-          if (error) {
-            console.error('Error', error);
-          } else {
-            this.$router.push({ path: 'instructions' });
-          }
-        });
+        localStorage.setItem('ign', this.ign);
+        this.$router.push({ path: 'mechanics' })
       }
     },
     clear () {
