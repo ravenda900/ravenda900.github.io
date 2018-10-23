@@ -30,14 +30,42 @@ const Scores = Vue.component('scoreboard', {
     }
   },
   mounted () {
-    let scoresRef = firebase.database().ref('Scores').orderByChild('totalScore');
+    let db = firebase.database();
+    let scoresList = firebase.database().ref('Scores').orderByChild('totalScore');
 
-    scoresRef.on('value', (snapshot) => {
+    scoresList.on('value', (snapshot) => {
       this.items = [];
       const scores = snapshot.val();
-      const uids = Object.keys(scores);
-      for (let i = 0 ; i < uids.length ; i++) {
-        this.items.push(scores[uids[i]]);
+      if (scores !== null) {
+        const uids = Object.keys(scores);
+        for (let i = 0 ; i < uids.length ; i++) {
+          let index = this.items.findIndex(item => item.ign === scores[uids[i]].ign);
+
+          if ((scores[uids[i]].totalScore > (this.totalQuestions * this.totalTime * this.points)) || (typeof scores[uids[i]].ign === 'undefined')) {
+            db.ref('Scores/' + uids[i]).remove();
+          }
+
+          if (index !== -1) {
+            if (this.items[index].totalScore <= scores[uids[i]].totalScore) {
+              db.ref('Scores/' + this.items[index].key + '/totalScore').set(scores[uids[i]].totalScore, (error) => {
+                if (error) {
+                  console.error('Error', error);
+                } else {
+                  db.ref('Scores/' + uids[i]).remove();
+                }
+              });
+            }
+            db.ref('Scores/' + uids[i]).remove();
+          } else {
+            let score = scores[uids[i]];
+            score.key = uids[i];
+            this.items.push(score);
+          }
+        }
+      } else {
+        this.items.push({
+          message: 'No entries yet'
+        });
       }
     });
   }

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -65,10 +66,10 @@
         </v-content>
       </v-app>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase.js"></script>
     <script>
       // Initialize Firebase
@@ -122,11 +123,15 @@
                 ripple
                 @click
               >
-                <v-list-tile-content>
+                <v-list-tile-content v-if="item.message">
+                  <v-list-tile-title>{{ item.message }}</v-list-tile-title>
+                </v-list-tile-content>
+
+                <v-list-tile-content v-if="item.ign">
                   <v-list-tile-title>{{ getOrdinalNumber(index + 1) }} - {{ item.ign }}</v-list-tile-title>
                 </v-list-tile-content>
 
-                <v-list-tile-action>
+                <v-list-tile-action v-if="item.totalScore">
                   <v-list-tile-action-text>{{ item.totalScore }}pts ({{ ((item.totalScore / (totalQuestions * totalTime * points)) * 100).toFixed(2) }}%)</v-list-tile-action-text>
                 </v-list-tile-action>
 
@@ -142,8 +147,8 @@
     </script>
     <script type="text/x-template" id="questions-template">
       <v-layout justify-center v-if="isDataLoaded">
-        <v-flex xs6>
-          <h6 class="title mb-3 text-xs-center">{{ timer }}</h6>
+        <v-flex xs6 v-if="currentQuestion">
+          <h6 class="title mb-3 text-xs-center">{{ timer === null ? 'Game Over!' : timer }}</h6>
           <p class="caption">Current Score: {{ score }}pts ({{ (score / (totalQuestions * totalTime * points) * 100).toFixed(2) }}%)</p>
           <p class="subheading mb-3">Question #{{ currentIndex + 1 }}: {{ currentQuestion.question }}</p>
           <v-btn
@@ -151,8 +156,8 @@
             outline
             color="red darken-3"
             class="mb-3"
-            v-for="choice in currentQuestion.choices.split(', ')"
-            :disabled="answer !== null"
+            v-for="choice in shuffledChoices"
+            :disabled="answer !== null || timer === null"
             :key="choice"
             @click="setAnswer(choice)">
             {{ choice }}
@@ -162,9 +167,9 @@
             outline
             color="red darken-3"
             class="mb-3"
-            v-if="answer !== null && (currentIndex + 1 !== totalQuestions)"
+            v-if="answer !== null && currentIndex + 1 !== totalQuestions"
             @click="skipQuestion">
-            Next question &gt;
+            Proceed to next question &gt;
           </v-btn>
 
           <v-btn
@@ -172,7 +177,7 @@
             outline
             color="red darken-3"
             class="mb-3"
-            v-if="answer !== null && (currentIndex + 1 === totalQuestions)"
+            v-if="(currentIndex + 1 === totalQuestions) && timer === null"
             @click="submitScore">
             Go to scoreboard &gt;
           </v-btn>
@@ -229,9 +234,10 @@
     </script>
     <script type="text/x-template" id="home-template">
       <v-layout justify-center align-center>
-        <v-flex xs12 sm6 md6>
-          <h1 class="display-3 red--text text-xs-center">DemiGods' Riddle Party Event</h1>
-          <blockquote class="blockquote">Talent wins games, but teamwork and intelligence wins championships. — Michael Jordan</blockquote>
+        <v-flex xs12 sm6 md6 class="text-xs-center">
+          <img src="./images/logo.png">
+          <h1 class="display-2 red--text text-xs-center">DemiGods' Riddle Party Event</h1>
+          <blockquote class="blockquote text-xs-left" v-html="quote.content + '—' + quote.title" v-if="isDataLoaded"></blockquote>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-text-field
               v-model="ign"

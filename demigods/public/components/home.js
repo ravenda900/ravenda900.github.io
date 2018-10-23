@@ -4,9 +4,11 @@ const Home = Vue.component('home', {
     valid: true,
     rules: {
       required: value => !!value || 'Required.',
-      counter: value => value.length <= 20 || 'Max 20 characters',
+      counter: value => value.length <= 25 || 'Max 25 characters',
     },
-    ign: ''
+    ign: '',
+    quote: null,
+    isDataLoaded: false
   }),
   methods: {
     submit () {
@@ -18,5 +20,15 @@ const Home = Vue.component('home', {
     clear () {
       this.ign = '';
     }
+  },
+  mounted () {
+    axios.get('https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1')
+      .then((response) => {
+        this.quote = response.data[0];
+        this.isDataLoaded = true;
+      });
+  },
+  destroyed () {
+    this.quote = null;
   }
 });

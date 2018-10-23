@@ -34,7 +34,7 @@ const AddQuestion = Vue.component('add-question', {
     submit () {
       if (this.$refs.form.validate()) {
         const firebaseRef = firebase.database().ref();
-        const questionsRef = firebaseRef.child('Questions').push();
+        const questionsRef = firebaseRef.child('GameQuestions').push();
         questionsRef.set({
           question: this.question,
           answer: this.answer,
@@ -50,15 +50,17 @@ const AddQuestion = Vue.component('add-question', {
       }
     },
     clear () {
-      this.$refs.form.reset()
+      this.$refs.form.reset();
     }
   },
   mounted () {
-    const questionsRef = firebase.database().ref('Questions');
+    const questionsRef = firebase.database().ref('GameQuestions');
 
     questionsRef.on('value', (snapshot) => {
-      let keys = Object.keys(snapshot.val());
-      this.totalQuestions = keys.length
+      if (snapshot.val() !== null) {
+        let keys = Object.keys(snapshot.val());
+        this.totalQuestions = keys.length
+      }
       this.isDataLoaded = true;
     });
   }

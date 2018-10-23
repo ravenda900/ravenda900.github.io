@@ -46,14 +46,15 @@ const Questions = Vue.component('questions', {
         --this.timer;
         localStorage.setItem('remainingTime', this.timer);
         if (this.timer < 0) {
-          this.timer = this.totalTime;
-          localStorage.setItem('remainingTime', this.timer);
-          ++this.currentIndex;
-          localStorage.setItem('currentIndex', this.currentIndex);
-          this.answer = null;
-          if (this.currentIndex + 1 === this.totalQuestions) {
+          if (this.currentIndex + 1=== this.totalQuestions) {
+            this.timer = null;
             clearInterval(this.interval);
-            this.$router.push({ path: 'scores' });
+          } else {
+            this.timer = this.totalTime;
+            localStorage.setItem('remainingTime', this.timer);
+            ++this.currentIndex;
+            localStorage.setItem('currentIndex', this.currentIndex);
+            this.answer = null;
           }
         }
       }, 1000);
@@ -61,6 +62,10 @@ const Questions = Vue.component('questions', {
     setAnswer (choice) {
       this.answer = choice;
       this.addPointsToScore();
+      if (this.currentIndex + 1 === this.totalQuestions) {
+        clearInterval(this.interval);
+        this.timer = null;
+      }
     },
     skipQuestion () {
       clearInterval(this.interval);
@@ -71,7 +76,7 @@ const Questions = Vue.component('questions', {
       this.startTimer();
     },
     addPointsToScore () {
-      if (this.currentQuestion.answer === this.answer) {
+      if (this.currentQuestion.answer.trim().toLowerCase() === this.answer.trim().toLowerCase()) {
         this.score += this.timer * this.points;
         localStorage.setItem('currentScore', this.score);
       }
@@ -83,18 +88,17 @@ const Questions = Vue.component('questions', {
       const totalScore = this.score;
       const percentage = (this.score / (this.totalQuestions * this.totalTime * this.points) * 100).toFixed(2);
 
+      clearInterval(this.interval);
+      this.$router.push({ path: 'scores' });
       scoresRef.set({
         ign: ign,
         totalScore: totalScore,
         date: firebase.database.ServerValue.TIMESTAMP
       }, (error) => {
-        console.error('Error', error);
         if (error) {
           console.error('Error', error);
         } else {
           this.reset();
-          clearInterval(this.interval);
-          this.$router.push({ path: 'scores' });
         }
       });
     },
@@ -141,25 +145,43 @@ const Questions = Vue.component('questions', {
   computed: {
     currentQuestion () {
       return this.questions[this.currentIndex];
+    },
+    shuffledChoices () {
+      const choices = this.currentQuestion.choices.split(', ');
+
+      let ctr = choices.length, temp, index;
+
+      while (ctr > 0) {
+        index = Math.floor(Math.random() * ctr);
+        ctr--;
+        temp = choices[ctr];
+        choices[ctr] = choices[index];
+        choices[index] = temp;
+      }
+
+      return choices;
     }
   },
   destroyed () {
+    this.reset();
     clearInterval(this.interval);
   },
   mounted () {
-    let questionsRef = firebase.database().ref('Questions');
+    let questionsRef = firebase.database().ref('GameQuestions');
     this.setCurrentIndex();
     this.setCurrentScore();
     this.setQuestionIndices();
 
     questionsRef.on('value', (snapshot) => {
-      if (this.questionIndices.length === 0) {
-        this.shuffleQuestions(snapshot.val());
-      } else {
-        this.getCurrentQuestions(snapshot.val());
+      if (snapshot.val() !== null) {
+        if (this.questionIndices.length === 0) {
+          this.shuffleQuestions(snapshot.val());
+        } else {
+          this.getCurrentQuestions(snapshot.val());
+        }
+        this.startTimer();
       }
       this.isDataLoaded = true;
-      this.startTimer();
     });
   }
 });

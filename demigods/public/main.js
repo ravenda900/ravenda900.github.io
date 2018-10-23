@@ -8,7 +8,7 @@ new Vue({
     drawer: null,
     items: [
       { icon: 'home', text: 'Home', path: '/' },
-      { divider: true },
+      // { divider: true },
       // { icon: 'assignment', text: 'Mechanics', path: 'mechanics' },
       { icon: 'redeem', text: 'Rewards', path: 'rewards' },
       { divider: true },
