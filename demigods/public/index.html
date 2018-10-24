@@ -147,7 +147,7 @@
     </script>
     <script type="text/x-template" id="questions-template">
       <v-layout justify-center v-if="isDataLoaded">
-        <v-flex xs6 v-if="currentQuestion">
+        <v-flex xs12 sm6 md6 v-if="currentQuestion">
           <h6 class="title mb-3 text-xs-center">{{ timer === null ? 'Game Over!' : timer }}</h6>
           <p class="caption">Current Score: {{ score }}pts ({{ (score / (totalQuestions * totalTime * points) * 100).toFixed(2) }}%)</p>
           <p class="subheading mb-3">Question #{{ currentIndex + 1 }}: {{ currentQuestion.question }}</p>
