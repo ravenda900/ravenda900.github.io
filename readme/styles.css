@@ -19,9 +19,16 @@ Easy Academy
 @import url(https://fonts.googleapis.com/css?family=Sigmar+One);
 
 body {
-	background: #3da1d1;
 	color: #fff;
 	overflow: hidden;
+	background: #000;
+}
+
+canvas {
+  overflow-y: hidden;
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
 }
 
 .congrats {
