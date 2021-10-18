@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="congrats">
-  <h1>Congratulations!</h1>
+  <h1 id="greetings">Congratulations!</h1>
   <h1 id="name"></h1>
 </div>
 <canvas id="canvas"></canvas>
@@ -18,13 +18,22 @@
 <script type="text/javascript">
   const urlParams = new URLSearchParams(window.location.search);
   const nameParam = urlParams.get('name');
+  const greetingsParam = urlParams.get('greetings');
   const name = document.getElementById('name');
+  const greetings = document.getElementById('greetings');
 
   if (nameParam) {
     name.innerHTML = nameParam;
     name.style.display = "block";
   } else {
     name.style.display = "none";
+  }
+
+  if (greetingsParam) {
+    greetings.innerHTML = greetingsParam;
+    greetings.style.display = "block";
+  } else {
+    greetings.style.display = "none";
   }
 </script>
 </body>
